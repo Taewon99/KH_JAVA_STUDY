@@ -1,6 +1,5 @@
 package com.kh.java;
 
-
 import java.sql.SQLException;
 import java.util.Scanner;
 

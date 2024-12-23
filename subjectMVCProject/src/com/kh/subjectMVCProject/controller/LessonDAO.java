@@ -1,4 +1,4 @@
-package com.kh.java.controller;
+package com.kh.subjectMVCProject.controller;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -8,25 +8,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import com.kh.java.model.StudentVO;
+import com.kh.subjectMVCProject.model.LessonVO;
 
-public class StudentDAO {
-	public static String selectSQL = "SELECT * FROM STUDENT";
-	public static String insertSQL = "INSERT INTO STUDENT(NO, NAME, KOR, ENG, MAT) VALUES(STUDENT_NO_SEQ.NEXTVAL, ?, ?, ?, ?)";
-	public static String callablRankProcSQL = "{call STUDENT_RANK_PROC()}";
-	public static String updateSQL = "UPDATE STUDENT SET NAME = ?, KOR = ?, ENG = ?, MAT = ? WHERE NO = ?";
-	public static String deleteSQL = "DELETE FROM STUDENT WHERE NO = ?";
-	public static String sortSQL = "SELECT *FROM STUDENT ORDER BY RANK";
+public class LessonDAO {
+	public static final String LESSON_SELECT = "SELECT * FROM STUDENT";
+	public static final String LESSON_INSERT = "INSERT INTO STUDENT(NO, NAME, KOR, ENG, MAT) VALUES(STUDENT_NO_SEQ.NEXTVAL, ?, ?, ?, ?)";
+	public static final String LESSON_CALLABLE_RANK_PROC = "{call STUDENT_RANK_PROC()}";
+	public static final String LESSON_UPDATE = "UPDATE STUDENT SET NAME = ?, KOR = ?, ENG = ?, MAT = ? WHERE NO = ?";
+	public static final String LESSON_DELETE = "DELETE FROM STUDENT WHERE NO = ?";
+	public static final String LESSON_SORT = "SELECT *FROM STUDENT ORDER BY RANK";
 
-	public static ArrayList<StudentVO> totalSelect() throws SQLException {
+	public static ArrayList<LessonVO> studentSelect() throws SQLException {
 		Connection con = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
+		ArrayList<LessonVO> studentList = new ArrayList<LessonVO>();
 
 		con = DBUtility.dbCon();
 		stmt = con.createStatement();	
-		rs = stmt.executeQuery(selectSQL);
+		rs = stmt.executeQuery(LESSON_SELECT);
 
 		while (rs.next()) {
 			int no = rs.getInt("NO");
@@ -38,7 +38,7 @@ public class StudentDAO {
 			int ave = rs.getInt("AVE");
 			int rank = rs.getInt("RANK");
 
-			StudentVO stu = new StudentVO(no, name, kor, eng, mat, total, ave, rank);
+			LessonVO stu = new LessonVO();
 			studentList.add(stu);
 		}
 
@@ -47,7 +47,7 @@ public class StudentDAO {
 		return studentList;
 	}
 
-	public static boolean studentInsert(StudentVO svo) throws SQLException {
+	public static boolean studentInsert(LessonVO svo) throws SQLException {
 		boolean successFlag = false;
 		Connection con = null;
 		CallableStatement cstmt = null;
@@ -56,16 +56,13 @@ public class StudentDAO {
 		// 1 Load, 2. connect
 		con = DBUtility.dbCon();
 
-		pstmt = con.prepareStatement(insertSQL);
+		pstmt = con.prepareStatement(LESSON_INSERT);
 		pstmt.setString(1, svo.getName());
-		pstmt.setInt(2, svo.getKor());
-		pstmt.setInt(3, svo.getEng());
-		pstmt.setInt(4, svo.getMat());
 
 		int result1 = pstmt.executeUpdate();
 		System.out.println((result1 != 0) ? "입력성공" : "입력실패");
 
-		cstmt = con.prepareCall(callablRankProcSQL);
+		cstmt = con.prepareCall(LESSON_CALLABLE_RANK_PROC);
 		int result2 = cstmt.executeUpdate();
 		System.out.println((result2 != 0) ? "프로시저성공" : "프로시저실패");
 
@@ -74,7 +71,7 @@ public class StudentDAO {
 		return successFlag;
 	}
 
-	public static boolean studentUpdate(StudentVO svo) throws SQLException {
+	public static boolean studentUpdate(LessonVO svo) throws SQLException {
 		boolean successFlag = false;
 		Connection con = null;
 		PreparedStatement pstmt = null;
@@ -82,17 +79,14 @@ public class StudentDAO {
 
 		con = DBUtility.dbCon();
 
-		pstmt = con.prepareStatement(updateSQL);
+		pstmt = con.prepareStatement(LESSON_UPDATE);
 		pstmt.setString(1, svo.getName());
-		pstmt.setInt(2, svo.getKor());
-		pstmt.setInt(3, svo.getEng());
-		pstmt.setInt(4, svo.getMat());
-		pstmt.setInt(5, svo.getNo());
+//		pstmt.setInt(5, svo.getNo());
 		
 		int result1 = pstmt.executeUpdate();
 		System.out.println((result1 != 0) ? "수정성공" : "수정실패");
 		
-		cstmt = con.prepareCall(callablRankProcSQL);
+		cstmt = con.prepareCall(LESSON_CALLABLE_RANK_PROC);
 		int result2 = cstmt.executeUpdate();
 		System.out.println((result2 != 0) ? "프로시저성공" : "프로시저실패");
 		
@@ -101,15 +95,15 @@ public class StudentDAO {
 		return successFlag;
 	}
 
-	public static boolean studentDelete(StudentVO svo) throws SQLException {
+	public static boolean studentDelete(LessonVO svo) throws SQLException {
 		boolean successFlag = false;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 
 		con = DBUtility.dbCon();
 
-		pstmt = con.prepareStatement(deleteSQL);
-		pstmt.setInt(1, svo.getNo());
+		pstmt = con.prepareStatement(LESSON_DELETE);
+//		pstmt.setInt(1, svo.getNo());
 		int result = pstmt.executeUpdate();
 
 		successFlag = (result != 0) ? true : false;
@@ -119,15 +113,15 @@ public class StudentDAO {
 
 	}
 
-	public static ArrayList<StudentVO> studentSort() throws SQLException {
+	public static ArrayList<LessonVO> studentSort() throws SQLException {
 		Connection con = null;
 		Statement stmt = null;
 		ResultSet rs = null;
-		ArrayList<StudentVO> studentList = new ArrayList<StudentVO>();
+		ArrayList<LessonVO> studentList = new ArrayList<LessonVO>();
 
 		con = DBUtility.dbCon();
 		stmt = con.createStatement();
-		rs = stmt.executeQuery(sortSQL);
+		rs = stmt.executeQuery(LESSON_SORT);
 
 		while (rs.next()) {
 			int no = rs.getInt("NO");
@@ -139,7 +133,7 @@ public class StudentDAO {
 			int ave = rs.getInt("AVE");
 			int rank = rs.getInt("RANK");
 
-			StudentVO stu = new StudentVO(no, name, kor, eng, mat, total, ave, rank);
+			LessonVO stu = new LessonVO();
 			studentList.add(stu);
 		}
 
